@@ -35,5 +35,5 @@ Download: http://gpcv.whu.edu.cn/data/building_dataset.html
 - For **phase 4** run this command in your terminal
   wget https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth -O weights/sam_vit_h.pth
 
--Segment Anything Model **SAM**
+- Segment Anything Model **SAM**
   pip install git+https://github.com/facebookresearch/segment-anything.git  
