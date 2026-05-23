@@ -20,7 +20,7 @@ def get_train_transforms(image_size: int = 512):
     """Strong augmentations for training. Remote sensing images benefit from
     heavy geometric augmentation since buildings appear at any orientation."""
     return A.Compose([
-        A.RandomResizedCrop(image_size, image_size, scale=(0.5, 1.0)),
+        A.RandomResizedCrop(size=(image_size, image_size), scale=(0.5, 1.0)),
         A.HorizontalFlip(p=0.5),
         A.VerticalFlip(p=0.5),
         A.RandomRotate90(p=0.5),
@@ -39,7 +39,7 @@ def get_train_transforms(image_size: int = 512):
 def get_val_transforms(image_size: int = 512):
     """Minimal transforms for validation/test: just resize and normalize."""
     return A.Compose([
-        A.Resize(image_size, image_size),
+        A.Resize(height=image_size, width=image_size),
         A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
         ToTensorV2(),
     ])
