@@ -18,7 +18,7 @@ from pathlib import Path
 
 import torch
 import torch.nn as nn
-from torch.cuda.amp import GradScaler, autocast
+from torch.amp import GradScaler, autocast
 from tqdm import tqdm
 
 # ── Project imports ───────────────────────────────────────────────────────────
@@ -174,11 +174,7 @@ def train_one_epoch(model, loader, optimizer, scheduler, criterion, scaler, devi
 
         optimizer.zero_grad()
 
-        with autocast():
-            logits = model(images)
-            loss   = criterion(logits, masks)
-
-        scaler.scale(loss).backward()
+        with autocast(device_type=device.type):
         # Gradient clipping: important for Swin decoder stability
         scaler.unscale_(optimizer)
         torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
@@ -205,11 +201,7 @@ def evaluate(model, loader, criterion, device):
         images = batch["image"].to(device, non_blocking=True)
         masks  = batch["mask"].to(device,  non_blocking=True)
 
-        with autocast():
-            logits = model(images)
-            loss   = criterion(logits, masks)
-
-        total_loss += loss.item()
+        with autocast(device_type=device.type):
         metrics.update(logits, masks)
 
     avg_loss = total_loss / len(loader)
@@ -275,7 +267,7 @@ def main():
     criterion = build_loss(cfg)
     optimizer = build_optimizer(model, cfg, args.phase)
     scheduler = build_scheduler(optimizer, cfg, len(loaders["train"]))
-    scaler    = GradScaler(enabled=cfg["training"]["mixed_precision"])
+    scaler    = GradScaler(device=device.type, enabled=cfg["training"]["mixed_precision"])
 
     # ── Checkpointing ─────────────────────────────────────────────────────────
     os.makedirs("checkpoints", exist_ok=True)
