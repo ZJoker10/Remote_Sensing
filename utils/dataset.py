@@ -20,7 +20,7 @@ def get_train_transforms(image_size: int = 512):
     """Strong augmentations for training. Remote sensing images benefit from
     heavy geometric augmentation since buildings appear at any orientation."""
     return A.Compose([
-        A.RandomResizedCrop(size=(image_size, image_size), scale=(0.5, 1.0)),
+        A.RandomResizedCrop(image_size, image_size, scale=(0.5, 1.0)),
         A.HorizontalFlip(p=0.5),
         A.VerticalFlip(p=0.5),
         A.RandomRotate90(p=0.5),
@@ -102,7 +102,7 @@ class WHUBuildingDataset(Dataset):
             image = augmented["image"]          # (C, H, W) float tensor
             mask  = augmented["mask"].unsqueeze(0)  # (1, H, W)
 
-        return {"image": image, "mask": mask, "path": str(img_path)}
+        return {"image": image, "mask": mask, "path": str(img_path), "pseudo": False}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
